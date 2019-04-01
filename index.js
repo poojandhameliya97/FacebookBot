@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
     if (req.query['hub.mode'] && req.query['hub.verify_token'] === process.env.VERIFICATION_TOKEN) {
       res.status(200).send(req.query['hub.challenge']);
     } else {
-      res.status(403).send('Error wrong token');
+      res.status(403).send('Deployed');
     }
   });
   
