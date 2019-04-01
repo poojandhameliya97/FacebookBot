@@ -66,7 +66,7 @@ app.get('/', (req, res) => {
       request({
         url: "https://graph.facebook.com/v3.2/" + sender,
         qs: {
-            access_token : 'EAAfTifl8Qi0BAInxcLsKYklDwqC77moGrzYE5S0EK2ybpzYpem2aAf5K68ZAf4tsqg5OxMp2YXzPoTSQd0ZBjnft4ZAYpqqFiulzLuhkjhCvXohu1rwireeuzyovBXQpTBmvSQ1sBHettZBsZAvmyi3oZAK7RkpvuIepg1T0hLXaOz2FNivYKE',
+            access_token : 'EAAfTifl8Qi0BAEEvlp83rIkARRgTE3uwvKAPcjkunWzO2pBZAJH7AFfeEkMufGQEYyZBOSWNohs7MCrqTCJ5h4FZBl8LzBY49CCXk2Iq2BqbA87vnbgdUKBBuz8ojAGGkZC41tPDnEha6amNhBPvMudDsKCZAThfJoWztS8AWnwZDZD',
             fields: "first_name"
         },
         method: "GET",
@@ -110,7 +110,7 @@ app.get('/', (req, res) => {
     
     request({
       url: 'https://graph.facebook.com/v3.2/me/messages',
-      qs: {access_token: 'EAAfTifl8Qi0BAInxcLsKYklDwqC77moGrzYE5S0EK2ybpzYpem2aAf5K68ZAf4tsqg5OxMp2YXzPoTSQd0ZBjnft4ZAYpqqFiulzLuhkjhCvXohu1rwireeuzyovBXQpTBmvSQ1sBHettZBsZAvmyi3oZAK7RkpvuIepg1T0hLXaOz2FNivYKE'},
+      qs: {access_token: 'EAAfTifl8Qi0BAEEvlp83rIkARRgTE3uwvKAPcjkunWzO2pBZAJH7AFfeEkMufGQEYyZBOSWNohs7MCrqTCJ5h4FZBl8LzBY49CCXk2Iq2BqbA87vnbgdUKBBuz8ojAGGkZC41tPDnEha6amNhBPvMudDsKCZAThfJoWztS8AWnwZDZD'},
       method: 'POST',
       json: {
         recipient: {id: sender},
