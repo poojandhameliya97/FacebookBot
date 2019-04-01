@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
  app.post('/', (req, res) => {
    //console.log(req.body);
    console.log(JSON.stringify(req.body));
-    /*if (req.body.object === 'page') {
+    if (req.body.object === 'page') {
       req.body.entry.forEach((entry) => {
         entry.messaging.forEach((event) => {
           if (event.message && event.message.text) {
@@ -47,8 +47,8 @@ app.get('/', (req, res) => {
       });
       res.status(200).end();
     }
-    */
-    res.status(200).end();
+    
+    //res.status(200).end();
   });
 
 
