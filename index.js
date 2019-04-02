@@ -93,7 +93,7 @@ app.get('/', (req, res) => {
           "logoURL":  "http://pngimg.com/imgs/logos/facebook_logos/" 
         };
         //console.log(name);
-          //ref.push(dataDB);
+          ref.push(dataDB);
       }
     });
     //console.log(name);
