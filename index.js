@@ -87,8 +87,8 @@ app.get('/', (req, res) => {
           "Timestamp": event.timestamp,
           "IssuerID": sender,
           "Name": name,
-          "Platform": 'Facebook',
-          "approved": false,
+          "platform": 'Facebook',
+          "approved": 'false',
           "cssClass": "is-info",
           "logoURL":  "http://pngimg.com/imgs/logos/facebook_logos/" 
         };
