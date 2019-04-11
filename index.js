@@ -85,7 +85,7 @@ app.get('/', (req, res) => {
       //console.log(data[0]);
         dataDB={
           "Location": data[0],
-          "Type": type,
+          "Type": data[2],
           "Body": data[1],
           "Timestamp": event.timestamp,
           "IssuerID": sender,
