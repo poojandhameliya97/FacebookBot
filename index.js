@@ -62,6 +62,7 @@ app.get('/', (req, res) => {
     //FB.api(sender, function(response) { console.log(response); });
     let text='';
     let name;
+    let type;
     if(checkMessageFormat(event.message.text)!=-1)
     {
       request({
@@ -82,7 +83,7 @@ app.get('/', (req, res) => {
             name = bodyObj.first_name;
             data=checkMessageFormat(event.message.text);
             type=getLuisIntent(data[1])
-      //console.log(data[0]);
+      console.log(type);
         dataDB={
           "Location": data[0],
           "Type": data[2],
@@ -96,7 +97,7 @@ app.get('/', (req, res) => {
           "logoURL":  "http://pngimg.com/uploads/facebook_logos/facebook_logos_PNG19751.png" 
         };
         //console.log(name);
-          ref.push(dataDB);
+         // ref.push(dataDB);
       }
     });
     //console.log(name);
