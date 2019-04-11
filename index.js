@@ -82,8 +82,8 @@ app.get('/', (req, res) => {
             
             name = bodyObj.first_name;
             data=checkMessageFormat(event.message.text);
-            type=getLuisIntent(data[1])
-      console.log(type);
+           // type=getLuisIntent(data[1])
+      //console.log(type);
         dataDB={
           "Location": data[0],
           "Type": data[2],
