@@ -89,8 +89,8 @@ app.get('/', (req, res) => {
           "Name": name,
           "platform": 'Facebook',
           "approved": 'false',
-          "cssClass": "is-info",
-          "logoURL":  "http://pngimg.com/imgs/logos/facebook_logos/" 
+          "cssClass": "is-link",
+          "logoURL":  "http://pngimg.com/uploads/facebook_logos/facebook_logos_PNG19751.png" 
         };
         //console.log(name);
           ref.push(dataDB);
