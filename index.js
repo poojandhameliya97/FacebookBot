@@ -5,7 +5,7 @@ const request = require('request');
 var querystring = require('querystring');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+var type;
 const server = app.listen(process.env.PORT || 5000, () => {
   console.log('Express server listening on port %d in %s mode', server.address().port, app.settings.env);
 });
@@ -26,7 +26,7 @@ var ref = db.ref('/twittercomplaints');
 
 //For facebook Validation
 app.get('/', (req, res) => {
-    if (req.query['hub.mode'] && req.query['hub.verify_token'] === process.env.VERIFICATION_TOKEN) {
+    if (req.query['hub.mode'] && req.query['hub.verify_token'] === 'testing') {
       res.status(200).send(req.query['hub.challenge']);
     } else {
       res.status(403).send('Deployed');
@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
  /* Handling all messenges */
  app.post('/', (req, res) => {
    //console.log(req.body);
-   console.log(JSON.stringify(req.body));
+   //console.log(JSON.stringify(req.body));
     if (req.body.object === 'page') {
       req.body.entry.forEach((entry) => {
         entry.messaging.forEach((event) => {
@@ -57,12 +57,12 @@ app.get('/', (req, res) => {
   function sendMessage(event) {
   
     let sender = event.sender.id;
-    console.log(event.message.text);
+    //console.log(event.message.text);
     //console.log(JSON.stringify(event));
     //FB.api(sender, function(response) { console.log(response); });
     let text='';
     let name;
-    let type;
+    
     if(checkMessageFormat(event.message.text)!=-1)
     {
       request({
@@ -82,8 +82,9 @@ app.get('/', (req, res) => {
             
             name = bodyObj.first_name;
             data=checkMessageFormat(event.message.text);
-            type=getLuisIntent(data[1])
-      //console.log(type);
+            tp=getLuisIntent(data[1]);
+            console.log(tp);
+      
         dataDB={
           "Location": data[0],
           "Type": data[2],
@@ -97,7 +98,7 @@ app.get('/', (req, res) => {
           "logoURL":  "http://pngimg.com/uploads/facebook_logos/facebook_logos_PNG19751.png" 
         };
         //console.log(name);
-         ref.push(dataDB);
+        // ref.push(dataDB);
       }
     });
     //console.log(name);
@@ -254,12 +255,12 @@ app.get('/', (req, res) => {
     // Set the LUIS_APP_ID environment variable 
     // to df67dcdb-c37d-46af-88e1-8b97951ca1c2, which is the ID
     // of a public sample application.    
-    var luisAppId = process.env.LUIS_APP_ID;
+    var luisAppId = "081c52cc-c0eb-4d30-a68f-a6d3945d4519";
 
     // Read LUIS key from environment file ".env"
     // You can use the authoring key instead of the endpoint key. 
     // The authoring key allows 1000 endpoint queries a month.
-    var endpointKey = process.env.LUIS_ENDPOINT_KEY;
+    var endpointKey = "34a959e65faa4951b564b6ef3c66de81";
 
     // Create query string 
     var queryParams = {
@@ -272,7 +273,7 @@ app.get('/', (req, res) => {
     var luisRequest =
         endpoint + luisAppId +
         '?' + querystring.stringify(queryParams);
-
+    var type;
     // HTTP Request
     request(luisRequest,
         function (err,
@@ -283,13 +284,16 @@ app.get('/', (req, res) => {
                 console.log(err);
             else {
                 var data = JSON.parse(body);
-
+             
                 console.log(`Query: ${data.query}`);
                 console.log(`Top Intent: ${data.topScoringIntent.intent}`);
                 console.log('Intents:');
                 console.log(JSON.stringify(data.intents));
-                return data.topScoringIntent.intent;
-            }
+                type=data.topScoringIntent.intent;
+                console.log(type);
+              
+                
+              }
         });
-
+       return type;
 }
