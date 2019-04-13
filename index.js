@@ -26,7 +26,7 @@ var ref = db.ref('/twittercomplaints');
 
 //For facebook Validation
 app.get('/', (req, res) => {
-    if (req.query['hub.mode'] && req.query['hub.verify_token'] === 'testing') {
+    if (req.query['hub.mode'] && req.query['hub.verify_token'] === process.env.VERIFICATION_TOKEN) {
       res.status(200).send(req.query['hub.challenge']);
     } else {
       res.status(403).send('Deployed');
@@ -52,6 +52,58 @@ app.get('/', (req, res) => {
     //res.status(200).end();
   });
 
+//For getting the type of the complaint, we have used microsoft azure and trained it.
+  function getLuisIntent(utterance,callback) {
+    utterance=utterance|| "Init value";
+    // endpoint URL
+    var endpoint =
+        "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/";
+
+    // Set the LUIS_APP_ID environment variable 
+    // to df67dcdb-c37d-46af-88e1-8b97951ca1c2, which is the ID
+    // of a public sample application.    
+    var luisAppId = process.env.LUIS_APP_ID;
+
+    // Read LUIS key from environment file ".env"
+    // You can use the authoring key instead of the endpoint key. 
+    // The authoring key allows 1000 endpoint queries a month.
+    var endpointKey = process.env.LUIS_ENDPOINT_KEY;
+
+    // Create query string 
+    var queryParams = {
+        "verbose":  true,
+        "q": utterance,
+        "subscription-key": endpointKey
+    }
+
+    // append query string to endpoint URL
+    var luisRequest =
+        endpoint + luisAppId +
+        '?' + querystring.stringify(queryParams);
+    
+    // HTTP Request
+    request(luisRequest,utterance,
+        function (err,
+            response, body) {
+
+            // HTTP Response
+            if (err)
+                console.log(err);
+            else {
+                utterance = JSON.parse(body);
+                return callback(utterance.topScoringIntent.intent);
+                console.log(`Query: ${data.query}`);
+                console.log(`Top Intent: ${data.topScoringIntent.intent}`);
+                console.log('Intents:');
+                console.log(JSON.stringify(data.intents));
+                type=data.topScoringIntent.intent;
+                console.log(type);
+               
+                
+              }
+        });
+       
+}
 
 
   function sendMessage(event) {
@@ -62,13 +114,13 @@ app.get('/', (req, res) => {
     //FB.api(sender, function(response) { console.log(response); });
     let text='';
     let name;
-    
+    let newData;
     if(checkMessageFormat(event.message.text)!=-1)
     {
       request({
         url: "https://graph.facebook.com/v3.2/" + sender,
         qs: {
-            access_token : 'EAAfTifl8Qi0BAEEvlp83rIkARRgTE3uwvKAPcjkunWzO2pBZAJH7AFfeEkMufGQEYyZBOSWNohs7MCrqTCJ5h4FZBl8LzBY49CCXk2Iq2BqbA87vnbgdUKBBuz8ojAGGkZC41tPDnEha6amNhBPvMudDsKCZAThfJoWztS8AWnwZDZD',
+            access_token : 'EAAfTifl8Qi0BAPSgCVJb9fbtBGO8F7BOSGFVkRu6IDNYZBOY7lfUcQ4ZCENzFBoaPrxRh0msMuoy7aQXH26PVZAS0ZA1mC8lZAZBJ27Jj2XQ8zyfkscsOE7QXgSyMvBbBACadKBOzZAykAqZBu8LAbNBaVsbxVongZCAyxAbaCh6x0QZDZD',
             fields: "first_name"
         },
         method: "GET",
@@ -82,26 +134,28 @@ app.get('/', (req, res) => {
             
             name = bodyObj.first_name;
             data=checkMessageFormat(event.message.text);
-            tp=getLuisIntent(data[1]);
-            console.log(tp);
-      
-        dataDB={
-          "Location": data[0],
-          "Type": data[2],
-          "Body": data[1],
-          "Timestamp": event.timestamp,
-          "IssuerID": sender,
-          "Name": name,
-          "platform": 'Facebook',
-          "approved": 'false',
-          "cssClass": "is-link",
-          "logoURL":  "http://pngimg.com/uploads/facebook_logos/facebook_logos_PNG19751.png" 
-        };
-        //console.log(name);
-        // ref.push(dataDB);
+            console.log(data);
+            getLuisIntent(data[1],function(val) {
+              newData=val;
+              //console.log(newData);
+              dataDB={
+                "Location": data[0],
+                "Type": newData,
+                "Body": data[1],
+                "Timestamp": event.timestamp,
+                "IssuerID": sender,
+                "Name": name,
+                "platform": 'Facebook',
+                "approved": 'false',
+                "cssClass": "is-link",
+                "logoURL":  "http://pngimg.com/uploads/facebook_logos/facebook_logos_PNG19751.png" 
+              };
+              console.log(newData);
+              ref.push(dataDB);
+            });
+
       }
     });
-    //console.log(name);
     
       
      
@@ -115,7 +169,7 @@ app.get('/', (req, res) => {
     
     request({
       url: 'https://graph.facebook.com/v3.2/me/messages',
-      qs: {access_token: 'EAAfTifl8Qi0BAEEvlp83rIkARRgTE3uwvKAPcjkunWzO2pBZAJH7AFfeEkMufGQEYyZBOSWNohs7MCrqTCJ5h4FZBl8LzBY49CCXk2Iq2BqbA87vnbgdUKBBuz8ojAGGkZC41tPDnEha6amNhBPvMudDsKCZAThfJoWztS8AWnwZDZD'},
+      qs: {access_token: 'EAAfTifl8Qi0BAPSgCVJb9fbtBGO8F7BOSGFVkRu6IDNYZBOY7lfUcQ4ZCENzFBoaPrxRh0msMuoy7aQXH26PVZAS0ZA1mC8lZAZBJ27Jj2XQ8zyfkscsOE7QXgSyMvBbBACadKBOzZAykAqZBu8LAbNBaVsbxVongZCAyxAbaCh6x0QZDZD'},
       method: 'POST',
       json: {
         recipient: {id: sender},
@@ -131,14 +185,18 @@ app.get('/', (req, res) => {
   }
 
   
-
+//Checking format of the message
   function checkMessageFormat(str) {
     var s;
     s = str.toLowerCase();
     var pos1=s.indexOf("location:");
-    var pos2=s.indexOf("type:");
     var pos3=s.indexOf("body:");
-    if(pos1==-1 || pos2==-1 || pos3==-1)
+    var pos2=s.indexOf("type");
+    if(pos2!=-1)
+    {
+      return -1;
+    }
+    if(pos1==-1 || pos3==-1)
     {
         return -1;
     }
@@ -146,7 +204,7 @@ app.get('/', (req, res) => {
     {
         var map = new Map();
         var pos4=s.length;
-        var ind=[pos1,pos2,pos3,pos4]
+        var ind=[pos1,pos3,pos4]
         ind.sort();
         if(ind[0]!=0)
         {
@@ -163,7 +221,7 @@ app.get('/', (req, res) => {
                 }
                 map.set("location",s1);
             }
-            else if(s[ind[0]]=="b")
+            else 
             {
                 var s1="";
                 for(var i=ind[0]+5;i<ind[1];i++)
@@ -172,16 +230,6 @@ app.get('/', (req, res) => {
                 }
                  map.set("body",s1);
               
-            }
-            else
-            {
-                var s1="";
-                for(var i=ind[0]+5;i<ind[1];i++)
-                {
-                    s1+=str[i];
-                }
-                map.set("type",s1);
-                   
             }
             if(s[ind[1]]=="l")
             {
@@ -193,7 +241,7 @@ app.get('/', (req, res) => {
                 map.set("location",s1);
                
             }
-            else if(s[ind[1]]=="b")
+            else 
             {
                 var s1="";
                 for(var i=ind[1]+5;i<ind[2];i++)
@@ -202,43 +250,7 @@ app.get('/', (req, res) => {
                 }
                 map.set("body",s1);
             }
-            else
-            {
-                var s1="";
-                for(var i=ind[1]+5;i<ind[2];i++)
-                {
-                    s1+=str[i];
-                }
-                map.set("type",s1);
-            }
-            if(s[ind[2]]=="l")
-            {
-                var s1="";
-                for(var i=ind[2]+9;i<ind[3];i++)
-                {
-                    s1+=str[i];
-                }
-                map.set("location",s1);
-            }
-            else if(s[ind[2]]=="b")
-            {
-                var s1="";
-                for(var i=ind[2]+5;i<ind[3];i++)
-                {
-                    s1+=str[i];
-                }
-                map.set("body",s1);
-            }
-            else
-            {
-                var s1="";
-                for(var i=ind[2]+5;i<ind[3];i++)
-                {
-                    s1+=str[i];
-                }
-                map.set("type",s1);
-            }
-            var fin=[map.get("location"),map.get("body"),map.get("type")];
+            var fin=[map.get("location"),map.get("body")];
             return fin;
         }
        
@@ -246,54 +258,4 @@ app.get('/', (req, res) => {
   }
 
 
-  function getLuisIntent(utterance) {
-
-    // endpoint URL
-    var endpoint =
-        "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/";
-
-    // Set the LUIS_APP_ID environment variable 
-    // to df67dcdb-c37d-46af-88e1-8b97951ca1c2, which is the ID
-    // of a public sample application.    
-    var luisAppId = "081c52cc-c0eb-4d30-a68f-a6d3945d4519";
-
-    // Read LUIS key from environment file ".env"
-    // You can use the authoring key instead of the endpoint key. 
-    // The authoring key allows 1000 endpoint queries a month.
-    var endpointKey = "34a959e65faa4951b564b6ef3c66de81";
-
-    // Create query string 
-    var queryParams = {
-        "verbose":  true,
-        "q": utterance,
-        "subscription-key": endpointKey
-    }
-
-    // append query string to endpoint URL
-    var luisRequest =
-        endpoint + luisAppId +
-        '?' + querystring.stringify(queryParams);
-    var type;
-    // HTTP Request
-    request(luisRequest,
-        function (err,
-            response, body) {
-
-            // HTTP Response
-            if (err)
-                console.log(err);
-            else {
-                var data = JSON.parse(body);
-             
-                console.log(`Query: ${data.query}`);
-                console.log(`Top Intent: ${data.topScoringIntent.intent}`);
-                console.log('Intents:');
-                console.log(JSON.stringify(data.intents));
-                type=data.topScoringIntent.intent;
-                console.log(type);
-              
-                
-              }
-        });
-       return type;
-}
+  
