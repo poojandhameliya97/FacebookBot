@@ -54,7 +54,7 @@ app.get('/', (req, res) => {
 
 //For getting the type of the complaint, we have used microsoft azure and trained it.
   function getLuisIntent(utterance,callback) {
-    utterance=utterance|| "Init value";
+   
     // endpoint URL
     var endpoint =
         "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/";
