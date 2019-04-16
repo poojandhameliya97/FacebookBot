@@ -144,7 +144,7 @@ app.get('/', (req, res) => {
                 "Body": data[1],
                 "Timestamp": event.timestamp,
                 "IssuerID": sender,
-                "Name": name,
+                "IssuerName": name,
                 "platform": 'Facebook',
                 "approved": 'false',
                 "cssClass": "is-link",
