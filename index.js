@@ -163,7 +163,7 @@ app.get('/', (req, res) => {
     }
     else
     {
-      text = "Message not formatted properly. Please refer to the instructions at https://domain.com/instructions";
+      text = "Message not formatted properly. Please refer to the instructions at https://complaintsapp-cfa95.firebaseapp.com/instructions";
     }
     
     
