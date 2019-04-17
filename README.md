@@ -12,13 +12,11 @@ Now, to deploy in heroku follow the below steps in terminal:
 
 2) heroku create
 
-3) git init 
+Now add the folder by git add .
 
-4) git add .
-
-5) git commit -m "commit"
-
-6) git push heroku master
+3) git push heroku master
 
 
 At last, open the heroku app and set the config variables of access token and verification token.
+
+Here, we have also traied the app to know the type of complaint from the body itself. For this, we have used microsoft azure.
